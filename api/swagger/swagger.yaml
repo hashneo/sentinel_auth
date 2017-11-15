@@ -1,0 +1,227 @@
+---
+swagger: '2.0'
+info:
+  description: ''
+  version: '0.0.1'
+  title: 'data'
+  termsOfService: ''
+  contact:
+    name: ''
+    url: ''
+    email: 'hello@koo.io'
+  license:
+    name: 'Koo.io LLC'
+host: koo.io
+basePath: /
+schemes:
+- https
+consumes:
+- application/json
+produces:
+- application/json
+- text/plain
+- text/html
+
+paths:
+  /health:
+    x-swagger-router-controller: health
+    get:
+      tags:
+      - health
+      operationId: health
+      responses:
+        200:
+          description: health information
+          schema:
+            $ref: '#/definitions/Status'
+
+  /v1/publickey:
+      x-swagger-router-controller: key
+      get:
+        operationId: getPublicKey
+        responses:
+          200:
+            description: key
+            schema:
+              type: string
+
+
+  /v1/login:
+    x-swagger-router-controller: auth
+    post:
+      operationId: Login
+      parameters:
+      - in: body
+        name: auth
+        description: Authentication object
+        required: true
+        schema:
+          $ref: '#/definitions/Auth'
+      responses:
+        200:
+          description: ok
+          schema:
+            type: string
+            description: koo.io jwt token
+        302:
+          description: redirect
+          schema:
+            type: string
+        401:
+          description: authorizationEnas failed
+        default:
+          $ref: '#/responses/Error'
+
+  /v1/register:
+    x-swagger-router-controller: auth
+    post:
+      operationId: Register
+      parameters:
+      - in: body
+        name: auth
+        description: Authentication object
+        required: true
+        schema:
+          $ref: '#/definitions/Auth'
+      responses:
+        200:
+          description: ok
+          schema:
+            type: string
+            description: koo.io jwt token
+        302:
+          description: redirect
+          schema:
+            type: string
+        401:
+          description: authorizationEnas failed
+        default:
+          $ref: '#/responses/Error'
+
+  /v1/logout:
+    x-swagger-router-controller: auth
+    get:
+      operationId: Logout
+      responses:
+        200:
+          description: ok
+          schema:
+            type: string
+        302:
+          description: redirect
+          schema:
+            type: string
+        401:
+          description: authorization failed
+        default:
+          $ref: '#/responses/Error'
+
+  /v1/password/reset:
+    x-swagger-router-controller: password
+    post:
+      operationId: resetPassword
+      parameters:
+      - in: body
+        name: message
+        description: message
+        required: true
+        schema:
+          $ref: '#/definitions/Auth'
+      responses:
+        200:
+          description: messages
+        default:
+          $ref: '#/responses/Error'
+
+  /v1/password/change:
+    x-swagger-router-controller: password
+    post:
+      operationId: changePassword
+      parameters:
+      - in: body
+        name: message
+        description: message
+        required: true
+        schema:
+          $ref: '#/definitions/PasswordChange'
+      responses:
+        200:
+          description: ok
+        default:
+          $ref: '#/responses/Error'
+
+  /swagger:
+      x-swagger-pipe: swagger_raw
+
+responses:
+
+  Error:
+    description: error
+    schema:
+      $ref: '#/definitions/Error'
+
+definitions:
+
+  Error:
+    required:
+      - code
+      - message
+    properties:
+      code:
+        type: integer
+        format: int32
+      message:
+        type: string
+
+  Status:
+    type: object
+    additionalProperties: false
+    properties:
+      status:
+        type: string
+
+  Auth:
+    type: object
+    additionalProperties: false
+    properties:
+      Credentials:
+        $ref: '#/definitions/Credentials'
+
+  Credentials:
+    type: object
+    additionalProperties: false
+    properties:
+      name:
+        type: string
+      email:
+        type: string
+      password:
+        type: string
+      socialCredentials:
+        $ref: '#/definitions/SocialCredentials'
+
+  SocialCredentials:
+    type: object
+    additionalProperties: false
+    properties:
+      provider:
+        type: string
+        description: The social login provider
+        enum:
+        - facebook
+        - instagram
+        - google
+        - twitter
+        - github
+        - linkedin
+      token:
+        type: string
+
+  PasswordChange:
+    type: object
+    additionalProperties: false
+    properties:
+      existing:
+        type: string
+      new:
+        type: string

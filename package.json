@@ -1,0 +1,51 @@
+{
+  "name": "auth",
+  "version": "0.0.1",
+  "private": true,
+  "description": "New Swagger API Project",
+  "keywords": [],
+  "author": "cat",
+  "license": "",
+  "main": "app.js",
+  "dependencies": {
+    "body-parser": "^1.15.0",
+    "cookie-parser": "^1.4.3",
+    "express": "^4.12.3",
+    "express-session": "^1.14.1",
+    "jsonwebtoken": "^7.1.9",
+    "jwt-verifier-client": "^1.0.4",
+    "merge": "^1.2.0",
+    "mysql": "^2.11.1",
+    "newrelic": "^1.28.1",
+    "node-jose": "^0.9.1",
+    "node-uuid": "^1.4.7",
+    "passport": "^0.3.2",
+    "passport-facebook": "^2.1.1",
+    "passport-github": "^1.1.0",
+    "passport-github2": "^0.1.10",
+    "passport-google-oauth2": "^0.1.6",
+    "passport-instagram": "^1.0.0",
+    "passport-linkedin": "^1.0.0",
+    "passport-twitter": "^1.0.4",
+    "q": "^1.4.1",
+    "request": "^2.74.0",
+    "request-promise": "^4.1.1",
+    "sentinel-common": "git+http://gitlab.steventaylor.me/sentinel/common.git",
+    "superagent": "^1.8.3",
+    "superagent-proxy": "^1.0.0",
+    "swagger-express-mw": "^0.1.0",
+    "swagger-tools": "^0.10.1",
+    "underscore": "^1.8.3"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "mocha": "^2.5.3",
+    "should": "^7.1.0",
+    "supertest": "^1.2.0",
+    "swagger-parser": "^3.4.1"
+  },
+  "scripts": {
+    "test": "mocha -b",
+    "start": "node app.js"
+  }
+}
