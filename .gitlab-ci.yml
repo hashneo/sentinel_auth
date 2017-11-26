@@ -10,6 +10,7 @@ variables:
 
 stages:
   - build
+  - deploy
 
 build_job:
   stage: build
