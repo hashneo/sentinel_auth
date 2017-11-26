@@ -7,15 +7,15 @@ const merge = require('merge');
 const guid = require('node-uuid');
 const crypto = require('crypto');
 
-function processStudentCredentials(studentCredentials){
+function validate(auth){
 
-    if ( studentCredentials.socialCredentials ){
+    if ( auth.socialCredentials ){
 
-        if (studentCredentials.email) {
+        if (auth.email) {
             throw { code: 400, message : 'cannot authenticate using both email and social credentials.' };
         }
 
-        let socialCredentials = studentCredentials.socialCredentials;
+        let socialCredentials = auth.socialCredentials;
 
         if (!socialCredentials.provider) {
             throw { code: 400, message : 'social provider cannot be blank or missing.' };
@@ -52,24 +52,24 @@ function processStudentCredentials(studentCredentials){
         });
 
     } else {
-        if (!studentCredentials.email || !studentCredentials.password) {
+        if (!auth.email || !auth.password) {
             throw {code: 400, message: 'email or password cannot be blank or missing.'};
         }
 
         return new Promise( (fulfill, reject) => {
 
             try {
-                const email = studentCredentials.email.toLowerCase();
+                const email = auth.email.toLowerCase();
 
                 const hash = crypto.createHmac('sha256', email)
-                    .update(studentCredentials.password)
+                    .update(auth.password)
                     .digest('hex');
 
                 fulfill({
                     provider: 'email',
                     id: email,
                     password: hash,
-                    name: studentCredentials.name
+                    name: auth.name
                 });
             }catch(err){
                 reject(err);
@@ -78,29 +78,13 @@ function processStudentCredentials(studentCredentials){
     }
 }
 
-function validate(auth){
-
-    if (auth.studentCredentials) {
-        return processStudentCredentials(auth.studentCredentials);
-    }
-}
-
 function createJwt(acct, res){
 
     let claims;
 
-    if ( acct.company ){
-        claims = {
-            acc_id: acct.company.id,
-            employee_id: acct.id,
-            employer_id: acct.company.id
-        };
-    }else{
-        claims = {
-            acc_id: acct.id,
-            student_id: acct.id,
-        };
-    }
+    claims = {
+        acc_id: acct.id,
+    };
 
     makeJwt(claims)
         .then( (jwt) => {
@@ -121,10 +105,6 @@ function findAccount(auth){
         }
     };
 
-    if ( auth.company !== undefined ){
-        k['company'] = { id: auth.company.id };
-    }
-
     return new Promise( (fulfill, reject) => {
 
         accounts.find(null, k)
@@ -144,19 +124,23 @@ module.exports.Login = (req, res) => {
 
     validate(auth)
         .then( (criteria) => {
+            auth = criteria;
             return findAccount(criteria);
         })
         .then( (acct) => {
-            if (auth.provider === 'email') {
-                if (!acct.id)
-                    throw {code: 404, message: 'account does not exist.'};
-
-                if (acct.auth.password !== auth.password)
-                    throw {code: 401, message: 'invalid credentials.'};
-            }
-
             // Social accounts can always login (get created if not)
             new Promise( (fulfill, reject) =>{
+
+                if (acct.auth.provider === 'email') {
+                    if (!acct.id)
+                        throw {code: 404, message: 'account does not exist.'};
+
+                    if (acct.auth.password !== auth.password)
+                        throw {code: 401, message: 'invalid credentials.'};
+
+                    return  fulfill(acct);
+                }
+
                 if (!acct.id){
                     createAccount(acct, auth)
                         .then( (acct) =>{
@@ -172,11 +156,10 @@ module.exports.Login = (req, res) => {
             .then( (acct) => {
                 createJwt(acct, res);
             })
+            .catch( (err) => {
+                res.status(err.code >= 400 && err.code <= 451 ? err.code : 500).json( { code: err.code || 0, message: err.message } );
+            });
         })
-        .catch( (err) => {
-            res.status(err.code >= 400 && err.code <= 451 ? err.code : 500).json( { code: err.code || 0, message: err.message } );
-        });
-
 };
 
 module.exports.Logout = (req, res) => {

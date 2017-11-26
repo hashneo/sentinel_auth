@@ -1,13 +1,21 @@
 "use strict";
 
 const db = require('sentinel-common').db;
-const collection = db.createCollection('tokens');
+
+var collection;
+
+function getCollection(){
+    if (!collection){
+        collection = db.createCollection('tokens');
+    }
+    return collection;
+}
 
 module.exports.find = (key, criteria) => {
 
     return new Promise( function( fulfill, reject ){
 
-        collection.find(null, key, criteria)
+        getCollection().find(null, key, criteria)
             .then( function(docs){
                 if (docs) {
                     fulfill( docs[0] );
@@ -25,7 +33,7 @@ module.exports.save = (data) => {
 
     return new Promise( (fulfill, reject) => {
 
-        collection.insert(null, data)
+        getCollection().insert(null, data)
             .then( () => {
                 fulfill(data);
             })
@@ -52,7 +60,7 @@ module.exports.delete = (data) => {
 
     return new Promise( (fulfill, reject) => {
 
-        collection.delete(null, data)
+        getCollection().delete(null, data)
             .then( () => {
                 fulfill(data);
             })

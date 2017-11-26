@@ -8,10 +8,9 @@ info:
   contact:
     name: ''
     url: ''
-    email: 'hello@koo.io'
+    email: 'hello@steventaylor.me'
   license:
-    name: 'Koo.io LLC'
-host: koo.io
+    name: ''
 basePath: /
 schemes:
 - https
@@ -56,7 +55,7 @@ paths:
         description: Authentication object
         required: true
         schema:
-          $ref: '#/definitions/Auth'
+          $ref: '#/definitions/Credentials'
       responses:
         200:
           description: ok
@@ -67,8 +66,6 @@ paths:
           description: redirect
           schema:
             type: string
-        401:
-          description: authorizationEnas failed
         default:
           $ref: '#/responses/Error'
 
@@ -82,7 +79,7 @@ paths:
         description: Authentication object
         required: true
         schema:
-          $ref: '#/definitions/Auth'
+          $ref: '#/definitions/Credentials'
       responses:
         200:
           description: ok
@@ -93,8 +90,6 @@ paths:
           description: redirect
           schema:
             type: string
-        401:
-          description: authorizationEnas failed
         default:
           $ref: '#/responses/Error'
 
@@ -111,8 +106,6 @@ paths:
           description: redirect
           schema:
             type: string
-        401:
-          description: authorization failed
         default:
           $ref: '#/responses/Error'
 
@@ -126,7 +119,7 @@ paths:
         description: message
         required: true
         schema:
-          $ref: '#/definitions/Auth'
+          $ref: '#/definitions/Credentials'
       responses:
         200:
           description: messages
@@ -179,13 +172,6 @@ definitions:
     properties:
       status:
         type: string
-
-  Auth:
-    type: object
-    additionalProperties: false
-    properties:
-      Credentials:
-        $ref: '#/definitions/Credentials'
 
   Credentials:
     type: object

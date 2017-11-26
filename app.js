@@ -10,42 +10,128 @@ const app = express();
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
+const redis = require('redis');
+const uuid = require('node-uuid');
 
 const _ = require('underscore');
+
+// TODO: Refactor later as middleware
+//const ouath = require('./providers/ouath')(app);
+
+const consul = require('consul')( {
+    host: process.env.CONSUL || '127.0.0.1',
+    promisify: true
+});
+
+let moduleName = 'auth';
 
 app.use(bodyParser.json({limit: '50mb'}));
 app.use(cookieParser());
 
 app.use(session({secret: 'sentinel', saveUninitialized: true, resave: true}));
 
-// TODO: Refactor later as middleware
-const ouath = require('./providers/ouath')(app);
-
-var config = {
+let appConfig = {
     appRoot: __dirname, // required config
-    swaggerSecurityHandlers: {}
+    swaggerSecurityHandlers: {
+        Oauth: (req, authOrSecDef, scopesOrApiKey, cb) => {
+            if (scopesOrApiKey === 'open') {
+                cb();
+            }else {
+                cb();
+            }
+        }
+    }
 };
 
-SwaggerExpress.create(config, function (err, swaggerExpress) {
-    if (err) {
-        throw err;
-    }
 
-    app.use(SwaggerUi(swaggerExpress.runner.swagger));
 
-    // install middleware
-    swaggerExpress.register(app);
+consul.kv.get(`config/sentinel/${moduleName}`, function(err, result) {
+    if (err) throw err;
 
-    app.post(`/v1/service/login`, (req, res) => {
+    if (!result)
+        result = {Value: null};
+
+    let config = JSON.parse(result.Value);
+
+    if (!config)
+        config = {};
+
+    config.save = function () {
+        return new Promise((fulfill, reject) => {
+            consul.kv.set(`config/sentinel/${moduleName}`, JSON.stringify(this, null, '\t'), function (err, result) {
+                if (err)
+                    return reject(err);
+                fulfill(result);
+            })
+        });
+    };
+
+    global.config = config;
+    global.config.save();
+
+    let pub = redis.createClient(
+        {
+            host: process.env.REDIS || global.config.redis || '127.0.0.1',
+            socket_keepalive: true,
+            retry_unfulfilled_commands: true
+        }
+    );
+
+    SwaggerExpress.create(appConfig, function (err, swaggerExpress) {
+        if (err) {
+            throw err;
+        }
+
+        app.use(SwaggerUi(swaggerExpress.runner.swagger));
+        // install middleware
+        swaggerExpress.register(app);
+
+        let serviceId = process.env.SERVICE_ID || uuid.v4();
+
+        let port = process.env.PORT || 5000;
+        let server = app.listen(port, () => {
+
+            let host = process.env.HOST || process.env.SERVICE_NAME || require('ip').address();
+            let port = server.address().port;
+
+            let module = {
+                id: serviceId,
+                name: moduleName,
+                address: host,
+                port: port,
+                active: true,
+                endpoint: `http://${host}:${port}`,
+                check: {
+                    http: `http://${host}:${port}/health?id=${serviceId}`,
+                    interval: '15s'
+                }
+            };
+
+            process.env.SERVICE_ID = serviceId;
+
+            pub.on('ready', function (e) {
+
+                pub.publish('sentinel.module.start', JSON.stringify(module, '\t'));
+
+                setInterval(() => {
+                    pub.publish('sentinel.module.running', JSON.stringify(module, '\t'));
+                }, 30000);
+
+                if (swaggerExpress.runner.swagger.paths['/health']) {
+                    console.log(`you can get /health?id=${serviceId} on port ${port}`);
+                }
+                //global.module = require(`./${moduleName}.js`)(config);
+            });
+
+        });
 
     });
 
-    var port = process.env.PORT || 5002;
-    app.listen(port);
+});
 
-    if (swaggerExpress.runner.swagger.paths['/health']) {
-        console.log(`you can get /health on port ${port}`);
-    }
+process.on('unhandledRejection', (reason, p) => {
+    console.log('Unhandled Rejection at: Promise', p, 'reason:', reason);
+    process.exit(1);
 });
 
 module.exports = app;
