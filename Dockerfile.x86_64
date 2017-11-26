@@ -7,7 +7,7 @@ RUN apk add --update go git
 WORKDIR /src
 ADD . .
 
-RUN if [ -e "${CI_JOB_AUTH}" ] ; then git config --global url.http://$CI_JOB_AUTH@gitlab.steventaylor.me/.insteadOf http://gitlab.steventaylor.me/; fi
+RUN git config --global url.http://$CI_JOB_AUTH@gitlab.steventaylor.me/.insteadOf http://gitlab.steventaylor.me/
 RUN npm install
 
 EXPOSE 5000
