@@ -11,7 +11,7 @@ info:
     email: 'hello@steventaylor.me'
   license:
     name: ''
-basePath: /
+basePath: /api/auth
 schemes:
 - https
 consumes:
@@ -21,6 +21,19 @@ produces:
 - text/plain
 - text/html
 
+securityDefinitions:
+  Oauth:
+    type: oauth2
+    scopes:
+      open: no security
+      user: a user
+      admin: admin user
+    flow: implicit
+    authorizationUrl: https://my_aouth/
+
+security:
+  - Oauth: []
+
 paths:
   /health:
     x-swagger-router-controller: health
@@ -28,27 +41,46 @@ paths:
       tags:
       - health
       operationId: health
+      security:
+      - Oauth:
+        - open
+      parameters:
+      - in: query
+        name: id
+        type: string
       responses:
         200:
           description: health information
           schema:
             $ref: '#/definitions/Status'
+        400:
+          description: bad request
+        410:
+          description: invalid service id
+        default:
+          $ref: '#/responses/Error'
 
   /publickey:
-      x-swagger-router-controller: key
-      get:
-        operationId: getPublicKey
-        responses:
-          200:
-            description: key
-            schema:
-              type: string
+    x-swagger-router-controller: key
+    get:
+      operationId: getPublicKey
+      security:
+      - Oauth:
+        - open
+      responses:
+        200:
+          description: key
+          schema:
+            type: string
 
 
   /login:
     x-swagger-router-controller: auth
     post:
       operationId: Login
+      security:
+      - Oauth:
+        - open
       parameters:
       - in: body
         name: auth
@@ -73,6 +105,9 @@ paths:
     x-swagger-router-controller: auth
     post:
       operationId: Register
+      security:
+      - Oauth:
+        - admin
       parameters:
       - in: body
         name: auth
@@ -97,6 +132,9 @@ paths:
     x-swagger-router-controller: auth
     get:
       operationId: Logout
+      security:
+      - Oauth:
+        - user
       responses:
         200:
           description: ok
@@ -113,6 +151,9 @@ paths:
     x-swagger-router-controller: password
     post:
       operationId: resetPassword
+      security:
+      - Oauth:
+        - user
       parameters:
       - in: body
         name: message
@@ -130,6 +171,9 @@ paths:
     x-swagger-router-controller: password
     post:
       operationId: changePassword
+      security:
+      - Oauth:
+        - user
       parameters:
       - in: body
         name: message

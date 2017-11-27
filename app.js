@@ -31,22 +31,6 @@ let moduleName = 'auth';
 app.use(bodyParser.json({limit: '50mb'}));
 app.use(cookieParser());
 
-app.use(session({secret: 'sentinel', saveUninitialized: true, resave: true}));
-
-let appConfig = {
-    appRoot: __dirname, // required config
-    swaggerSecurityHandlers: {
-        Oauth: (req, authOrSecDef, scopesOrApiKey, cb) => {
-            if (scopesOrApiKey === 'open') {
-                cb();
-            }else {
-                cb();
-            }
-        }
-    }
-};
-
-
 
 consul.kv.get(`config/sentinel/${moduleName}`, function(err, result) {
     if (err) throw err;
@@ -79,6 +63,17 @@ consul.kv.get(`config/sentinel/${moduleName}`, function(err, result) {
             retry_unfulfilled_commands: true
         }
     );
+
+    app.use(session({secret: 'sentinel', saveUninitialized: true, resave: true}));
+
+    const securityHandlers = require('sentinel-common').securityHandlers;
+
+    let appConfig = {
+        appRoot: __dirname, // required config
+        swaggerSecurityHandlers: {
+            Oauth: securityHandlers.Oauth
+        }
+    };
 
     SwaggerExpress.create(appConfig, function (err, swaggerExpress) {
         if (err) {

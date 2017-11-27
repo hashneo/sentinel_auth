@@ -78,12 +78,13 @@ function validate(auth){
     }
 }
 
-function createJwt(acct, res){
+function createJwt(acct, key, res){
 
     let claims;
 
     claims = {
         acc_id: acct.id,
+        key: key
     };
 
     makeJwt(claims)
@@ -154,7 +155,8 @@ module.exports.Login = (req, res) => {
                 }
             })
             .then( (acct) => {
-                createJwt(acct, res);
+                let key = ( req.connection.encrypted ? 'https' : 'http' ) + '://' + req.headers.host + '/api/auth/publickey';
+                createJwt(acct, key, res);
             })
             .catch( (err) => {
                 res.status(err.code >= 400 && err.code <= 451 ? err.code : 500).json( { code: err.code || 0, message: err.message } );
@@ -202,7 +204,8 @@ module.exports.Register = (req, res) => {
             }
         })
         .then( (acct) => {
-            createJwt(acct, res);
+            let key = ( req.connection.encrypted ? 'https' : 'http' ) + '://' + req.headers.host + '/api/auth/publickey';
+            createJwt(acct, key, res);
         })
         .catch( (err) => {
             res.status(err.code >= 400 && err.code <= 451 ? err.code : 500).json( { code: err.code || 0, message: err.message } );
