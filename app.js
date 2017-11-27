@@ -15,6 +15,9 @@ const uuid = require('node-uuid');
 
 const _ = require('underscore');
 
+const fs = require('fs');
+const path = require('path');
+
 // TODO: Refactor later as middleware
 //const ouath = require('./providers/ouath')(app);
 
