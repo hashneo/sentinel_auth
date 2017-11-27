@@ -110,13 +110,13 @@ consul.kv.get(`config/sentinel/${moduleName}`, function(err, result) {
             process.env.SERVICE_ID = serviceId;
 
             pub.on('ready', function (e) {
-
+/*
                 pub.publish('sentinel.module.start', JSON.stringify(module, '\t'));
 
                 setInterval(() => {
                     pub.publish('sentinel.module.running', JSON.stringify(module, '\t'));
                 }, 30000);
-
+*/
                 if (swaggerExpress.runner.swagger.paths['/health']) {
                     console.log(`you can get /health?id=${serviceId} on port ${port}`);
                 }
