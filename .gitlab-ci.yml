@@ -10,6 +10,7 @@ variables:
 
 stages:
   - build
+  - deploy
 
 build_job:
   stage: build
@@ -19,3 +20,11 @@ build_job:
     - docker push $REGISTRY_IMAGE:$CI_COMMIT_SHA
     - docker push $REGISTRY_IMAGE:latest
     - docker logout docker.steventaylor.me
+
+deploy_job:
+  stage: deploy
+  script:
+    - docker -H tcp://$SENTINEL_HOST:2375 login -u gitlab-ci-token -p $CI_JOB_TOKEN docker.steventaylor.me
+    - docker -H tcp://$SENTINEL_HOST:2375 pull $REGISTRY_IMAGE:$CI_COMMIT_SHA
+    - docker -H tcp://$SENTINEL_HOST:2375 service update --image $REGISTRY_IMAGE:$CI_COMMIT_SHA $CI_PROJECT_PATH_SLUG
+    - docker -H tcp://$SENTINEL_HOST:2375 logout docker.steventaylor.me

@@ -34,7 +34,7 @@ paths:
           schema:
             $ref: '#/definitions/Status'
 
-  /v1/publickey:
+  /publickey:
       x-swagger-router-controller: key
       get:
         operationId: getPublicKey
@@ -45,7 +45,7 @@ paths:
               type: string
 
 
-  /v1/login:
+  /login:
     x-swagger-router-controller: auth
     post:
       operationId: Login
@@ -69,7 +69,7 @@ paths:
         default:
           $ref: '#/responses/Error'
 
-  /v1/register:
+  /register:
     x-swagger-router-controller: auth
     post:
       operationId: Register
@@ -93,7 +93,7 @@ paths:
         default:
           $ref: '#/responses/Error'
 
-  /v1/logout:
+  /logout:
     x-swagger-router-controller: auth
     get:
       operationId: Logout
@@ -109,7 +109,7 @@ paths:
         default:
           $ref: '#/responses/Error'
 
-  /v1/password/reset:
+  /password/reset:
     x-swagger-router-controller: password
     post:
       operationId: resetPassword
@@ -126,7 +126,7 @@ paths:
         default:
           $ref: '#/responses/Error'
 
-  /v1/password/change:
+  /password/change:
     x-swagger-router-controller: password
     post:
       operationId: changePassword
