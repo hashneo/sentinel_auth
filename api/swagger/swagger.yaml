@@ -229,6 +229,8 @@ definitions:
         type: string
       socialCredentials:
         $ref: '#/definitions/SocialCredentials'
+      token:
+        type: string
 
   SocialCredentials:
     type: object

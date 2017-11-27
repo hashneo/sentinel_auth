@@ -52,13 +52,21 @@ function validate(auth){
         });
 
     } else {
-        if (!auth.email || !auth.password) {
+
+        if (!auth.token && (!auth.email || !auth.password)) {
             throw {code: 400, message: 'email or password cannot be blank or missing.'};
         }
 
         return new Promise( (fulfill, reject) => {
 
             try {
+                if ( auth.token ){
+                    return fulfill({
+                        provider: 'token',
+                        id: auth.token
+                    });
+                }
+
                 const email = auth.email.toLowerCase();
 
                 const hash = crypto.createHmac('sha256', email)
@@ -84,7 +92,8 @@ function createJwt(acct, key, res){
 
     claims = {
         acc_id: acct.id,
-        key: key
+        key: key,
+        role: acct.role
     };
 
     makeJwt(claims)
@@ -162,6 +171,9 @@ module.exports.Login = (req, res) => {
                 res.status(err.code >= 400 && err.code <= 451 ? err.code : 500).json( { code: err.code || 0, message: err.message } );
             });
         })
+        .catch( (err) => {
+            res.status(err.code >= 400 && err.code <= 451 ? err.code : 500).json( { code: err.code || 0, message: err.message } );
+        });
 };
 
 module.exports.Logout = (req, res) => {
