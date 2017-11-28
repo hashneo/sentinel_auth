@@ -6,6 +6,7 @@ const makeJwt = require('../../jwt').makeJwt;
 const merge = require('merge');
 const guid = require('node-uuid');
 const crypto = require('crypto');
+const generator = require('generate-password');
 
 function validate(auth){
 
@@ -63,7 +64,7 @@ function validate(auth){
                 if ( auth.token ){
                     return fulfill({
                         provider: 'token',
-                        id: auth.token
+                        password: auth.token
                     });
                 }
 
@@ -106,14 +107,16 @@ function createJwt(acct, key, res){
         });
 }
 
-function findAccount(auth){
+function findAccount(auth, k){
 
-    let k = {
-        auth: {
-            provider: auth.provider,
-            id: auth.id
-        }
-    };
+    if (!k) {
+        k = {
+            auth: {
+                provider: auth.provider,
+                id: auth.id
+            }
+        };
+    }
 
     return new Promise( (fulfill, reject) => {
 
@@ -141,7 +144,7 @@ module.exports.Login = (req, res) => {
             // Social accounts can always login (get created if not)
             new Promise( (fulfill, reject) =>{
 
-                if (acct.auth.provider === 'email') {
+                if (acct.auth.provider !== 'social') {
                     if (!acct.id)
                         throw {code: 404, message: 'account does not exist.'};
 
@@ -184,7 +187,7 @@ module.exports.Logout = (req, res) => {
 function createAccount(acct, auth){
     acct = merge(acct, {
         id: guid.v4(),
-        name: auth.name,
+        name: (auth ? auth.name : acct.name),
         created: new Date().toISOString(),
     });
 
@@ -206,7 +209,7 @@ module.exports.Register = (req, res) => {
             }
             else {
                 // multiple email accounts can't exist
-                if ( acct.auth.provider === 'email' )
+                if ( acct.auth.provider !== 'email' )
                     throw {code: 403, message: 'account exists.'};
 
                 // If a social account exists, just do a login.
@@ -225,3 +228,47 @@ module.exports.Register = (req, res) => {
 
 };
 
+let initRetry = 5;
+
+function init(){
+
+    findAccount( null, {
+        auth: {
+            provider: 'token',
+        },
+        name: 'root',
+        role: 'admin'
+    } )
+    .then( (acct) =>{
+        if (!acct.id){
+
+            var password = generator.generate({
+                length: 36,
+                numbers: true
+            });
+
+            acct.auth['password'] = password;
+
+            createAccount( acct )
+            .then( (acct) =>{
+                console.log( 'created root account token => ' + acct.auth.password );
+            })
+            .catch( (err) => {
+                console.log(err);
+                process.exit(1);
+            });
+        }
+    })
+    .catch( (err) => {
+
+        if ( --initRetry == 0 ) {
+            console.log(err);
+            process.exit(1);
+        }
+
+        setTimeout( init, 1000 );
+    });
+}
+
+
+init();
