@@ -257,6 +257,8 @@ function init(){
                 console.log(err);
                 process.exit(1);
             });
+        } else {
+            console.log( 'root account already exists, token => ' + acct.auth.password );
         }
     })
     .catch( (err) => {
