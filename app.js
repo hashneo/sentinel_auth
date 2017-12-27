@@ -29,8 +29,8 @@ const consul = require('consul')( {
 let moduleName = 'auth';
 
 app.use(bodyParser.json({limit: '50mb'}));
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
-
 
 consul.kv.get(`config/sentinel/${moduleName}`, function(err, result) {
     if (err) throw err;
@@ -45,7 +45,7 @@ consul.kv.get(`config/sentinel/${moduleName}`, function(err, result) {
 
     config.save = function () {
         return new Promise((fulfill, reject) => {
-            consul.kv.set(`config/sentinel/${moduleName}`, JSON.stringify(this, null, '\t'), function (err, result) {
+            consul.kv.set(`config/sentinel/${moduleName}`, JSON.stringify(config, null, '\t'), function (err, result) {
                 if (err)
                     return reject(err);
                 fulfill(result);
@@ -86,7 +86,7 @@ consul.kv.get(`config/sentinel/${moduleName}`, function(err, result) {
 
         let serviceId = process.env.SERVICE_ID || uuid.v4();
 
-        let port = process.env.PORT || 5000;
+        let port = process.env.PORT || undefined;
         let server = app.listen(port, () => {
 
             let host = process.env.HOST || process.env.SERVICE_NAME || require('ip').address();
@@ -108,13 +108,13 @@ consul.kv.get(`config/sentinel/${moduleName}`, function(err, result) {
             process.env.SERVICE_ID = serviceId;
 
             pub.on('ready', function (e) {
-/*
+
                 pub.publish('sentinel.module.start', JSON.stringify(module, '\t'));
 
                 setInterval(() => {
                     pub.publish('sentinel.module.running', JSON.stringify(module, '\t'));
-                }, 30000);
-*/
+                }, 5000);
+
                 if (swaggerExpress.runner.swagger.paths['/health']) {
                     console.log(`you can get /health?id=${serviceId} on port ${port}`);
                 }

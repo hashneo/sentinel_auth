@@ -2,11 +2,15 @@
 
 const db = require('sentinel-common').db;
 
+function getCollection(){
+    return db.createCollection('accounts');
+}
+
 module.exports.find = (key, criteria) => {
 
     return new Promise( function( fulfill, reject ){
 
-        db.getCollection('accounts')
+        getCollection()
             .then( (collection) => {
                 collection.find(null, key, criteria)
                     .then( function(docs){
@@ -28,7 +32,7 @@ module.exports.create = (data) => {
 
     return new Promise( (fulfill, reject) => {
 
-        db.getCollection('accounts')
+        getCollection()
             .then( (collection) => {
                 collection.insert(null, data)
                     .then(() => {
