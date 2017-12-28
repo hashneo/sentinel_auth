@@ -16,7 +16,7 @@ RUN apk add --no-cache --virtual .gyp \
         git \
     && git config --global url.http://${CI_JOB_AUTH}@gitlab.steventaylor.me/.insteadOf http://gitlab.steventaylor.me/ \
     && npm install \
-    && npm install -g http://gitlab.steventaylor.me/sentinel/tools.git \
+    && npm install -g git+http://gitlab.steventaylor.me/sentinel/tools.git \
     && apk del .gyp
 
 EXPOSE 5000
