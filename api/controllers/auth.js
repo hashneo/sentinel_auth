@@ -4,7 +4,7 @@ const accounts = require('../../db/collections/accounts');
 const tokens = require('../../db/collections/tokens');
 const jwt = require('../../jwt');
 const merge = require('merge');
-const guid = require('node-uuid');
+const guid = require('uuid');
 const crypto = require('crypto');
 const generator = require('generate-password');
 
