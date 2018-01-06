@@ -11,7 +11,7 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const redis = require('redis');
-const uuid = require('node-uuid');
+const uuid = require('uuid');
 
 const _ = require('underscore');
 

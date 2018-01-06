@@ -20,7 +20,6 @@
     "mysql": "^2.11.1",
     "newrelic": "^1.28.1",
     "node-jose": "^0.9.1",
-    "node-uuid": "^1.4.7",
     "passport": "^0.3.2",
     "passport-facebook": "^2.1.1",
     "passport-github": "^1.1.0",

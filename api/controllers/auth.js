@@ -173,6 +173,7 @@ module.exports.formLogin = (req, res) => {
             res.redirect('/');
         })
         .catch((err) => {
+            console.error(err);
             res.redirect('/');
             /*
             res.status(err.code >= 400 && err.code <= 451 ? err.code : 500).json({
