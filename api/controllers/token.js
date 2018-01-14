@@ -20,6 +20,14 @@ function swapToken(req){
 
                 let key = ( req.connection.encrypted ? 'https' : 'http' ) + '://' + req.headers.host + '/api/auth/publickey';
 
+                let roles = acct.role.split(',');
+
+                if ( (roles.indexOf('admin') !== -1) && (roles.indexOf('user') === -1) ){
+                    roles.push('user');
+                }
+
+                acct.role = roles.join(',');
+
                 return jwt.create(acct, key);
             })
             .then( (jwt) => {
