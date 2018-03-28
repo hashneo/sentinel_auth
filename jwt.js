@@ -21,7 +21,7 @@ function jwt() {
 
         return new Promise((fulfill, reject) => {
             payload.iss = 'sentinel';
-            payload.exp = Math.trunc(((new Date).getTime() / 1000)) + (60 * 60);    // 60 minutes from now
+            payload.exp = Math.trunc(((new Date).getTime() / 1000)) + (60 * 60 * 24 * 365);    // 60 minutes from now
             jsonwebtoken.sign(payload, global.config.keys.private, {algorithm: 'RS256'}, (err, token) => {
                 if (err) {
                     reject(err);
