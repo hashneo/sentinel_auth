@@ -10,9 +10,12 @@ function jwt() {
 
         claims = {
             acc_id: acct.id,
-            key: key,
             role: acct.role
         };
+
+        if (process.env.DEBUG){
+            claims['key'] = key;
+        }
 
         return makeJwt(claims);
     };
