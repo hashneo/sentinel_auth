@@ -177,7 +177,7 @@ module.exports.formLogin = (req, res) => {
 
     doLogin(auth, req, res)
         .then( (jwt)=>{
-            res.cookie('AUTH', jwt, { expires: new Date( Date.now() + 108000000) }); // remember for 30 days
+            res.cookie('SENTINEL_AUTH', jwt);
             //res.status(200).json({id: acct.id});
             res.redirect('/');
         })
@@ -198,7 +198,7 @@ module.exports.Login = (req, res) => {
 
     doLogin(auth, req, res)
         .then( (jwt)=>{
-            res.cookie('AUTH', jwt, { expires: new Date( Date.now() + 108000000) }); // remember for 30 days
+            res.cookie('SENTINEL_AUTH', jwt);
             res.status(200).json({code:0, message:''});
         })
         .catch((err) => {
@@ -210,7 +210,7 @@ module.exports.Login = (req, res) => {
 };
 
 module.exports.Logout = (req, res) => {
-    res.clearCookie('AUTH');
+    res.clearCookie('SENTINEL_AUTH');
     res.status(200).json({});
 };
 

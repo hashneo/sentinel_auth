@@ -43,7 +43,7 @@ module.exports.getRefresh = (req, res) => {
 
     swapToken(req)
         .then( (jwt)=>{
-            res.cookie('AUTH', jwt);
+            res.cookie('SENTINEL_AUTH', jwt);
             res.status(200).json({id: req.jwt.acc_id});
         })
         .catch((err) => {
