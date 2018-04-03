@@ -177,7 +177,7 @@ module.exports.formLogin = (req, res) => {
 
     doLogin(auth, req, res)
         .then( (jwt)=>{
-            res.cookie('AUTH', jwt);
+            res.cookie('AUTH', jwt, { expires: new Date( Date.now() + 108000000) }); // remember for 30 days
             //res.status(200).json({id: acct.id});
             res.redirect('/');
         })
@@ -198,7 +198,7 @@ module.exports.Login = (req, res) => {
 
     doLogin(auth, req, res)
         .then( (jwt)=>{
-            res.cookie('AUTH', jwt);
+            res.cookie('AUTH', jwt, { expires: new Date( Date.now() + 108000000) }); // remember for 30 days
             res.status(200).json({code:0, message:''});
         })
         .catch((err) => {
