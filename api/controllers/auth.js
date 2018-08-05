@@ -164,35 +164,6 @@ function doLogin(auth, req, res){
 
 }
 
-module.exports.formLogin = (req, res) => {
-
-    let username = req.swagger.params.username.value;
-    let password = req.swagger.params.password.value;
-
-    let auth = {
-        name: '',
-        email: username,
-        password: password
-    };
-
-    doLogin(auth, req, res)
-        .then( (jwt)=>{
-            res.cookie('SENTINEL_AUTH', jwt);
-            //res.status(200).json({id: acct.id});
-            res.redirect('/');
-        })
-        .catch((err) => {
-            console.error(err);
-            res.redirect('/');
-            /*
-            res.status(err.code >= 400 && err.code <= 451 ? err.code : 500).json({
-                code: err.code || 0,
-                message: err.message
-            });
-            */
-        });
-};
-
 module.exports.Login = (req, res) => {
     let auth = req.swagger.params.auth.value;
 
