@@ -1,7 +1,5 @@
 'use strict';
 
-//require('newrelic');
-
 const SwaggerExpress = require('swagger-express-mw');
 const SwaggerUi = require('swagger-tools/middleware/swagger-ui');
 //const jwtVerifier = require('jwt-verifier-client')(require('./config').jwtVerifierUrl);
@@ -55,6 +53,10 @@ consul.kv.get(`config/sentinel/${moduleName}`, function(err, result) {
 
     global.config = config;
     global.config.save();
+
+    if (!global.config.newrelic) {
+        require('newrelic');
+    }
 
     let pub = redis.createClient(
         {
