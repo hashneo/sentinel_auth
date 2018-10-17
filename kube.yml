@@ -30,21 +30,12 @@ spec:
       containers:
         -
           name: sentinel-auth
-          image: docker.steventaylor.me/sentinel/auth/auth-x86_64:latest-staging
+          image: docker.steventaylor.me/sentinel/auth/auth-x86_64:latest
           imagePullPolicy: Always
           env:
             -
               name: "PORT"
               value: "5000"
-            -
-              name: "CONSUL"
-              value: "consul.steventaylor.me"
-            -
-              name: "REDIS"
-              value: "redis-redis"
-            -
-              name: "MONGO"
-              value: "mongo-mongodb:27017/sentinel"
           ports:
             -
               containerPort: 5000
