@@ -10,7 +10,7 @@ info:
     email: 'hello@steventaylor.me'
   license:
     name: ''
-basePath: /api/auth
+basePath: /api/
 schemes:
 - https
 consumes:
