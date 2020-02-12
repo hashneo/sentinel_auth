@@ -24,7 +24,7 @@ function validate(auth){
 
         if ( !socialCredentials.token ){
             throw { code: 400, message : 'social token cannot be blank or missing.' };
-            //res.redirect(`https://koo.io/api/v1/auth/${socialCredentials.provider}`);
+            //res.redirect(`https://${url}/api/v1/auth/${socialCredentials.provider}`);
             //return;
         }
 

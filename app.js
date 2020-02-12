@@ -18,9 +18,6 @@ const _ = require('underscore');
 const fs = require('fs');
 const path = require('path');
 
-// TODO: Refactor later as middleware
-//const ouath = require('./providers/ouath')(app);
-
 const consul = require('consul')( {
     host: process.env.CONSUL || '127.0.0.1',
     promisify: true

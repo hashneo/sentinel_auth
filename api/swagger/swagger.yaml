@@ -91,7 +91,7 @@ paths:
           description: ok
           schema:
             type: string
-            description: koo.io jwt token
+            description: jwt token
         302:
           description: redirect
           schema:
@@ -118,7 +118,7 @@ paths:
           description: ok
           schema:
             type: string
-            description: koo.io jwt token
+            description: jwt token
         302:
           description: redirect
           schema:
