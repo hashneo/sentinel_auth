@@ -48,7 +48,7 @@
     "swagger-parser": "^6.0.2"
   },
   "scripts": {
-    "test": "mocha -b",
+    "test": "",
     "start": "node app.js"
   }
 }
