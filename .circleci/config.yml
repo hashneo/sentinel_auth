@@ -13,8 +13,9 @@ jobs:
         docker build -t $DOCKER_ORG/sentinel-auth-x86_64:$CIRCLE_SHA1 . -f Dockerfile.x86_64
 
     # deploy the image
-    - run:
-        docker push $DOCKER_ORG/sentinel-auth-x86_64:$CIRCLE_SHA1 | docker push $DOCKER_ORG/sentinel-auth-x86_64:latest
+    - run: |
+        docker push $DOCKER_ORG/sentinel-auth-x86_64:$CIRCLE_SHA1 &&
+        docker push $DOCKER_ORG/sentinel-auth-x86_64:latest
 
 workflows:
   version: 2
