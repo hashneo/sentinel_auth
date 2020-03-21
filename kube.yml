@@ -14,34 +14,42 @@ spec:
     context: sentinel
     version: v1
 ---
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: sentinel-auth
+  name: auth
+  labels:
+    app: sentinel
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+      app: sentinel
   template:
     metadata:
       labels:
-        app: auth
-        context: sentinel
+        app: sentinel
         version: v1
     spec:
       containers:
         -
           name: sentinel-auth
-          image: docker.steventaylor.me/sentinel/auth/auth-x86_64:latest
+          image: docker.io/hashneo/sentinel-auth-x86_64:latest
           imagePullPolicy: Always
           env:
           - name: PORT
             value: "5000"
           - name: CONSUL
             value: "consul"
+          - name: NEW_RELIC_ENABLED
+            value: false
+          - name: NEW_RELIC_APP_NAME
+            value: 'Sentinel Authentication'
+          - name: NEW_RELIC_LICENSE_KEY
+            value: ''
           ports:
             -
               containerPort: 5000
               protocol: TCP
-      imagePullSecrets:
-      - name: regcred
       nodeSelector:
           beta.kubernetes.io/arch: amd64
