@@ -8,8 +8,7 @@ jobs:
     - run:
       name: Update Environment Variables at Runtime
       command: |
-        export TEMP_NAME=$($CIRCLE_PROJECT_REPONAME | sed 's/_/-/g')
-        echo "export PROJECT_NAME=$TEMP_NAME" >> $BASH_ENV
+        echo 'export PROJECT_NAME=$($CIRCLE_PROJECT_REPONAME | sed "s/_/-/g")' >> $BASH_ENV
         source $BASH_ENV
     - run:
         echo "$DOCKER_PASS" | docker login --username $DOCKER_USER --password-stdin
