@@ -1,17 +1,14 @@
-version: 2.1
-orbs:
-  node: circleci/node@1.1.6
+version: 2
 jobs:
-  build-and-test:
-    executor:
-      name: node/default
+  build:
+    machine: true
     steps:
-      - checkout
-      - node/with-cache:
-          steps:
-            - run: npm install
-            - run: npm test
-workflows:
-    build-and-test:
-      jobs:
-        - build-and-test
+    - checkout
+    - run: |
+        echo "$DOCKER_PASS" | docker login --username $DOCKER_USER --password-stdin
+
+    # build the application image
+    - run: docker build -t hashneo/app:$CIRCLE_BRANCH . -f Dockerfile.x86_64
+
+    # deploy the image
+    - run: docker push hashneo/app:$CIRCLE_BRANCH
