@@ -5,7 +5,7 @@ jobs:
     steps:
 
     - checkout
-    -run
+    - run:
       name: Update Environment Variables at Runtime
       command: |
         export TEMP_NAME=$($CIRCLE_PROJECT_REPONAME | sed 's/_/-/g')
