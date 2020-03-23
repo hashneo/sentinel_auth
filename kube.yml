@@ -10,26 +10,27 @@ spec:
     protocol: TCP
     targetPort: 5000
   selector:
-    app: auth
+    app: sentinel-auth
     context: sentinel
     version: v1
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: auth
+  name: sentinel-auth
   labels:
-    app: sentinel
+    app: sentinel-auth
+    context: sentinel
+    version: v1
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: sentinel
+      app: sentinel-auth
   template:
     metadata:
       labels:
-        app: sentinel
-        version: v1
+        app: sentinel-auth
     spec:
       containers:
         -
@@ -41,12 +42,14 @@ spec:
             value: "5000"
           - name: CONSUL
             value: "consul"
+          - name: NEW_RELIC_NO_CONFIG_FILE
+            value: "true"
           - name: NEW_RELIC_ENABLED
-            value: false
+            value: "true"
           - name: NEW_RELIC_APP_NAME
-            value: 'Sentinel Authentication'
+            value: "Sentinel Authentication"
           - name: NEW_RELIC_LICENSE_KEY
-            value: ''
+            value: ""
           ports:
             -
               containerPort: 5000
