@@ -170,7 +170,7 @@ module.exports.Login = (req, res) => {
     doLogin(auth, req, res)
         .then( (jwt)=>{
             res.cookie('SENTINEL_AUTH', jwt);
-            res.status(200).json({code:0, message: {token :jwt }});
+            res.status(200).json({code:0, data: {token :jwt}});
 
         })
         .catch((err) => {
