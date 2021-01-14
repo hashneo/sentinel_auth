@@ -10,7 +10,7 @@ info:
     email: 'hello@steventaylor.me'
   license:
     name: ''
-basePath: /api/auth/
+basePath: /api/
 schemes:
 - https
 consumes:
@@ -57,7 +57,7 @@ paths:
         default:
           $ref: '#/responses/Error'
 
-  /publickey:
+  /auth//publickey:
     x-swagger-router-controller: key
     get:
       operationId: getPublicKey
@@ -70,7 +70,7 @@ paths:
           schema:
             type: string
 
-  /login:
+  /auth//login:
     x-swagger-router-controller: auth
     post:
       operationId: Login
@@ -99,7 +99,7 @@ paths:
         default:
           $ref: '#/responses/Error'
 
-  /register:
+  /auth//register:
     x-swagger-router-controller: auth
     post:
       operationId: Register
@@ -126,7 +126,7 @@ paths:
         default:
           $ref: '#/responses/Error'
 
-  /logout:
+  /auth//logout:
     x-swagger-router-controller: auth
     get:
       operationId: Logout
@@ -145,7 +145,7 @@ paths:
         default:
           $ref: '#/responses/Error'
 
-  /token/refresh:
+  /auth//token/refresh:
     x-swagger-router-controller: token
     get:
       operationId: getRefresh
@@ -162,7 +162,7 @@ paths:
         default:
           $ref: '#/responses/Error'
 
-  /password/reset:
+  /auth//password/reset:
     x-swagger-router-controller: password
     post:
       operationId: resetPassword
@@ -182,7 +182,7 @@ paths:
         default:
           $ref: '#/responses/Error'
 
-  /password/change:
+  /auth//password/change:
     x-swagger-router-controller: password
     post:
       operationId: changePassword
@@ -202,7 +202,7 @@ paths:
         default:
           $ref: '#/responses/Error'
 
-  /swagger:
+  /auth//swagger:
       x-swagger-pipe: swagger_raw
 
 responses:
