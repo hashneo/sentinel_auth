@@ -4,7 +4,6 @@ require('newrelic');
 
 const SwaggerExpress = require('swagger-express-mw');
 const SwaggerUi = require('swagger-tools/middleware/swagger-ui');
-//const jwtVerifier = require('jwt-verifier-client')(require('./config').jwtVerifierUrl);
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
@@ -13,10 +12,7 @@ const session = require('express-session');
 const redis = require('redis');
 const uuid = require('uuid');
 
-const _ = require('underscore');
-
-const fs = require('fs');
-const path = require('path');
+const logger = require('sentinel-common').logger;
 
 const consul = require('consul')( {
     host: process.env.CONSUL || '127.0.0.1',
@@ -24,6 +20,8 @@ const consul = require('consul')( {
 });
 
 let moduleName = 'auth';
+
+global.app = app;
 
 app.use(bodyParser.json({limit: '50mb'}));
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -113,19 +111,16 @@ consul.kv.get(`config/sentinel/${moduleName}`, function(err, result) {
                 }, 5000);
 
                 if (swaggerExpress.runner.swagger.paths['/health']) {
-                    console.log(`you can get /health?id=${serviceId} on port ${port}`);
+                    logger.info(`you can get /health?id=${serviceId} on port ${port}`);
                 }
-                //global.module = require(`./${moduleName}.js`)(config);
             });
-
         });
-
     });
 
 });
 
 process.on('unhandledRejection', (reason, p) => {
-    console.log('Unhandled Rejection at: Promise', p, 'reason:', reason);
+    logger.error(`Unhandled Rejection at: Promise', ${p}, 'reason:' ${reason}`);
     process.exit(1);
 });
 

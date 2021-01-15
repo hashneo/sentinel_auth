@@ -7,10 +7,13 @@ const merge = require('merge');
 const guid = require('uuid');
 const crypto = require('crypto');
 const generator = require('generate-password');
+const logger = require('sentinel-common').logger;
 
 function validate(auth){
 
     if ( auth.socialCredentials ){
+
+        logger.debug( 'validating user with social credentials');
 
         if (auth.email) {
             throw { code: 400, message : 'cannot authenticate using both email and social credentials.' };
@@ -29,9 +32,11 @@ function validate(auth){
         }
 
         return new Promise( (fulfill, reject) => {
+            logger.debug( 'searching for social credential tokens in document store');
             tokens.find(socialCredentials.token)
                 .then( (doc) => {
                     if (doc) {
+                        logger.debug( 'document was found');
                         tokens.delete(doc)
                             .then(() => {
                                 fulfill( {
@@ -44,10 +49,12 @@ function validate(auth){
                                 reject(err);
                             });
                     }else{
-                        throw 401;
+                        logger.debug( 'document was not found');
+                        throw {code: 401, message: ''};
                     }
                 })
                 .catch( (err) => {
+                    logger.error( 'Error searching for social credential document');
                     reject(err);
                 });
         });
@@ -267,20 +274,20 @@ function init(){
 
                 createAccount( acct )
                 .then( (acct) =>{
-                    console.log( 'created root account, password => ' + rawPassword );
+                    logger.info( 'created root account, password => ' + rawPassword );
                 })
                 .catch( (err) => {
-                    console.log(err);
+                    logger.error(err);
                     process.exit(1);
                 });
             } else {
-                console.log( 'root account already exists' );
+                logger.info( 'root account already exists' );
             }
         })
         .catch( (err) => {
 
-            if ( --initRetry == 0 ) {
-                console.log(err);
+            if ( --initRetry === 0 ) {
+                logger.error(err);
                 process.exit(1);
             }
 

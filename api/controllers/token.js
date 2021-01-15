@@ -2,6 +2,7 @@
 
 const accounts = require('../../db/collections/accounts');
 const jwt = require('../../jwt');
+const logger = require('sentinel-common').logger;
 
 function swapToken(req){
 
