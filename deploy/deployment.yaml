@@ -23,18 +23,32 @@ spec:
             - name: PORT
               value: "5000"
             - name: CONSUL
-              value: "consul"
+              valueFrom:
+                configMapKeyRef:
+                  name: sentinel-env
+                  key: consul
+            - name: REDIS
+              valueFrom:
+                configMapKeyRef:
+                  name: sentinel-env
+                  key: redis
             - name: NEW_RELIC_NO_CONFIG_FILE
               value: "true"
             - name: NEW_RELIC_ENABLED
-              value: "true"
+              valueFrom:
+                configMapKeyRef:
+                  name: sentinel-env
+                  key: new_relic_enabled
             - name: NEW_RELIC_APP_NAME
               value: "Sentinel Authentication"
             - name: NEW_RELIC_LICENSE_KEY
-              value: ""
+              valueFrom:
+                configMapKeyRef:
+                  name: sentinel-env
+                  key: new_relic_licence_key
           ports:
             -
               containerPort: 5000
               protocol: TCP
       nodeSelector:
-        beta.kubernetes.io/arch: amd64
+        kubernetes.io/arch: amd64
