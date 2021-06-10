@@ -23,29 +23,11 @@ spec:
             - name: PORT
               value: "5000"
             - name: CONSUL
-              valueFrom:
-                configMapKeyRef:
-                  name: sentinel-env
-                  key: consul
+              value: "consul-headless.consul.svc.cluster.local"
             - name: REDIS
-              valueFrom:
-                configMapKeyRef:
-                  name: sentinel-env
-                  key: redis
-            - name: NEW_RELIC_NO_CONFIG_FILE
-              value: "true"
+              value: "redis-headless.redis.svc.cluster.local"
             - name: NEW_RELIC_ENABLED
-              valueFrom:
-                configMapKeyRef:
-                  name: sentinel-env
-                  key: new_relic_enabled
-            - name: NEW_RELIC_APP_NAME
-              value: "Sentinel Authentication"
-            - name: NEW_RELIC_LICENSE_KEY
-              valueFrom:
-                configMapKeyRef:
-                  name: sentinel-env
-                  key: new_relic_licence_key
+              value: "false"
           ports:
             -
               containerPort: 5000
