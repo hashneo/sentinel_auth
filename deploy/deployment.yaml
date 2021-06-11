@@ -15,22 +15,18 @@ spec:
         version: v1
     spec:
       containers:
+      -
+        name: app
+        image: docker.io/hashneo/sentinel-auth-x86_64:latest
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: PORT
+          value: "5000"
+        - name: CONSUL
+          value: consul
+        - name: NEW_RELIC_NO_CONFIG_FILE
+          value: "false"
+        ports:
         -
-          name: app
-          image: docker.io/hashneo/sentinel-auth-x86_64:latest
-          imagePullPolicy: Always
-          env:
-            - name: PORT
-              value: "5000"
-            - name: CONSUL
-              value: "consul-headless.consul.svc.cluster.local"
-            - name: REDIS
-              value: "redis-headless.redis.svc.cluster.local"
-            - name: NEW_RELIC_ENABLED
-              value: "false"
-          ports:
-            -
-              containerPort: 5000
-              protocol: TCP
-      nodeSelector:
-        kubernetes.io/arch: amd64
+          containerPort: 5000
+          protocol: TCP
